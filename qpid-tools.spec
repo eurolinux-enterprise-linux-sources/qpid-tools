@@ -3,7 +3,7 @@
 
 Name:           qpid-tools
 Version:        0.14
-Release:        2%{?dist}
+Release:        6%{?dist}
 Summary:        Management and diagnostic tools for Apache Qpid
 
 Group:          Development/Python
@@ -56,7 +56,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
-* Tue Apr 10 2012 Kenneth A. Giusti <kgiusti@redhat.com> - 0.14-2
+* Wed Aug  29 2012 Irina Boverman <iboverma@redhat.com> - 0.14-6
+- Resolves: rhbz#840058
+- Fixed: Bug 850111 - qpid-stat -c mech column data missing
+
+* Fri Dec  9 2011 Kenneth A. Giusti <kgiusti@redhat.com> - 0.14-1
 - Resolves: BZ765860
 
 * Tue Sep 27 2011 Ted Ross <tross@redhat.com> - 0.12-2
