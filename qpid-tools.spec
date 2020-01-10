@@ -3,15 +3,19 @@
 
 Name:           qpid-tools
 Version:        0.10
-Release:        3%{?dist}
+Release:        5%{?dist}
 Summary:        Management and diagnostic tools for Apache Qpid
 
 Group:          Development/Python
 License:        ASL 2.0
 URL:            http://qpid.apache.org
 Source0:        %{name}-%{version}.tar.gz
-Patch0:         mrg.patch
-Patch1:         bz693847.patch
+Patch0:         0001-Corrects-help-text-for-max-queue-size-max-queue-coun.patch
+Patch1:         0002-QPID-3169-merge-fix-to-0.10-branch.patch
+Patch2:         0003-Bug-693847-Fixed-JobServer-s-qmf-methods-are-not-cal.patch
+Patch3:         0004-Fixes-wrong-text-for-a-option-wrong-option-name-for-.patch
+Patch4:         0005-Bug-692134-Help-Usage-text-for-qpid-config-is-incorr.patch
+Patch5:         0006-Bug-711081-qpid-cluster-s-ID-crashes-with-NoneType-o.patch
 # svn export -r<rev> http://svn.apache.org/repos/asf/qpid/trunk/qpid/tools qpid-tools-0.7.<rev>
 # tar czf qpid-tools-0.7.<rev>.tar.gz qpid-tools-0.7.<rev>
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -29,6 +33,10 @@ Management and diagnostic tools for Apache Qpid brokers and clients.
 %setup -q
 %patch0 -p3
 %patch1 -p3
+%patch2 -p3
+%patch3 -p3
+%patch4 -p3
+%patch5 -p3
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
@@ -58,6 +66,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Jun  6 2011 Kenneth A. Giusti <kgiusti@redhat.com> - 0.10-5
+- Resolves: bz711180
+
+* Thu May 19 2011 Kenneth A. Giusti <kgiusti@redhat.com> - 0.10-4
+- Related: bz706119
+
 * Tue Apr 13 2011 Ted Ross <tross@redhat.com> - 0.10-3
 - Related: rhbz#670956
 - Fixed: Bug 670956 - qpid-tool does not support map arguments

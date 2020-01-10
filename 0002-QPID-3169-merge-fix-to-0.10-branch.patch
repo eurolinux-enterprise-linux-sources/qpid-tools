@@ -1,0 +1,27 @@
+From 8c1ab0ca23f6200e8a6385757d894dc0fc63734b Mon Sep 17 00:00:00 2001
+From: Kenneth Anthony Giusti <kgiusti@apache.org>
+Date: Fri, 25 Mar 2011 13:08:08 +0000
+Subject: [PATCH 2/5] QPID-3169: merge fix to 0.10 branch
+
+git-svn-id: https://svn.apache.org/repos/asf/qpid/branches/0.10@1085355 13f79535-47bb-0310-9956-ffa450edef68
+---
+ qpid/tools/src/py/qpid-route |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/qpid/tools/src/py/qpid-route b/qpid/tools/src/py/qpid-route
+index 516c02d..d98cefd 100755
+--- a/qpid/tools/src/py/qpid-route
++++ b/qpid/tools/src/py/qpid-route
+@@ -580,6 +580,9 @@ def main(argv=None):
+             else:
+                 Usage()
+                 return(-1)
++        else:
++            Usage()
++            return(-1)
+ 
+     except Exception,e:
+         if rm:
+-- 
+1.7.4.4
+
