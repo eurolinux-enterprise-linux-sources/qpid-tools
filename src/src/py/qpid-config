@@ -41,15 +41,15 @@ Usage:  qpid-config [OPTIONS]
 description = """
 ADDRESS syntax:
 
-      [username/password@] hostname
-      ip-address [:<port>]
+      [username/password@] hostname [:<port>]
+      [username/password@] ip-address [:<port>]
 
 Examples:
 
 $ qpid-config add queue q
-$ qpid-config add exchange direct d localhost:5672
-$ qpid-config exchanges 10.1.1.7:10000
-$ qpid-config queues guest/guest@broker-host:10000
+$ qpid-config add exchange direct d -a localhost:5672
+$ qpid-config exchanges -a 10.1.1.7:10000
+$ qpid-config queues -a guest/guest@broker-host:10000
 
 Add Exchange <type> values:
 
@@ -159,7 +159,7 @@ def OptionsAndArguments(argv):
     group1 = OptionGroup(parser, "General Options")
     group1.add_option("-t", "--timeout", action="store", type="int", default=10, metavar="<secs>", help="Maximum time to wait for broker connection (in seconds)")
     group1.add_option("-b", "--bindings", action="store_true", help="Show bindings in queue or exchange list")
-    group1.add_option("-a", "--broker-addr", action="store", type="string", default="localhost:5672", metavar="<address>", help="Maximum time to wait for broker connection (in seconds)")
+    group1.add_option("-a", "--broker-addr", action="store", type="string", default="localhost:5672", metavar="<address>", help="Address of qpidd broker")
     group1.add_option("--sasl-mechanism", action="store", type="string", metavar="<mech>", help="SASL mechanism for authentication (e.g. EXTERNAL, ANONYMOUS, PLAIN, CRAM-MD, DIGEST-MD5, GSSAPI). SASL automatically picks the most secure available mechanism - use this option to override.")
     parser.add_option_group(group1)
 
@@ -173,8 +173,8 @@ def OptionsAndArguments(argv):
     group3.add_option("--cluster-durable", action="store_true", help="The new queue becomes durable if there is only one functioning cluster node")
     group3.add_option("--file-count", action="store", type="int", default=8, metavar="<n>", help="Number of files in queue's persistence journal")
     group3.add_option("--file-size", action="store", type="int", default=24, metavar="<n>", help="File size in pages (64Kib/page)")
-    group3.add_option("--max-queue-size", action="store", type="int", metavar="<n>", help="Number of files in queue's persistence journal")
-    group3.add_option("--max-queue-count", action="store", type="int", metavar="<n>", help="Number of files in queue's persistence journal")
+    group3.add_option("--max-queue-size", action="store", type="int", metavar="<n>", help="Maximum in-memory queue size as bytes")
+    group3.add_option("--max-queue-count", action="store", type="int", metavar="<n>", help="Maximum in-memory queue size as a number of messages")
     group3.add_option("--limit-policy", action="store", choices=["none", "reject", "flow-to-disk", "ring", "ring-strict"], metavar="<policy>", help="Action to take when queue limit is reached")
     group3.add_option("--order", action="store", choices=["fifo", "lvq", "lvq-no-browse"], metavar="<ordering>", help="Queue ordering policy")
     group3.add_option("--generate-queue-events", action="store", type="int", metavar="<n>", help="If set to 1, every enqueue will generate an event that can be processed by registered listeners (e.g. for replication). If set to 2, events will be generated for enqueues and dequeues.")
@@ -199,7 +199,7 @@ def OptionsAndArguments(argv):
     group5 = OptionGroup(parser, "Options for Deleting Queues")
     group5.add_option("--force", action="store_true", help="Force delete of queue even if it's currently used or it's not empty")
     group5.add_option("--force-if-not-empty", action="store_true", help="Force delete of queue even if it's not empty")
-    group5.add_option("--force-if-not-used", action="store_true", help="Force delete of queue even if it's currently used")
+    group5.add_option("--force-if-used", action="store_true", help="Force delete of queue even if it's currently used")
     parser.add_option_group(group5)
 
     group6 = OptionGroup(parser, "Options for Declaring Bindings")
@@ -236,7 +236,7 @@ def OptionsAndArguments(argv):
         config._fileCount = opts.file_count
     if opts.file_size:
         config._fileSize = opts.file_size
-    if opts.max_queue_size:
+    if opts.max_queue_size != None:
         config._maxQueueSize = opts.max_queue_size
     if opts.max_queue_count:
         config._maxQueueCount = opts.max_queue_count
@@ -255,7 +255,7 @@ def OptionsAndArguments(argv):
         config._if_unused = False
     if opts.force_if_not_empty:
         config._if_empty = False
-    if opts.force_if_not_used:
+    if opts.force_if_used:
         config._if_unused = False
     if opts.sasl_mechanism:
         config._sasl_mechanism = opts.sasl_mechanism
@@ -488,7 +488,7 @@ class BrokerManager:
             declArgs[FILECOUNT] = config._fileCount
             declArgs[FILESIZE]  = config._fileSize
 
-        if config._maxQueueSize:
+        if config._maxQueueSize != None:
             declArgs[MAX_QUEUE_SIZE]  = config._maxQueueSize
         if config._maxQueueCount:
             declArgs[MAX_QUEUE_COUNT]  = config._maxQueueCount
